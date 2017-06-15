@@ -7,7 +7,8 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
   state: {
     articles: [],
-    user: ''
+    user: '',
+    searches: []
   },
   mutations: {
     getArticles (state, payload) {
@@ -15,6 +16,12 @@ export const store = new Vuex.Store({
     },
     getUser (state, payload) {
       state.user = payload
+    },
+    getSearches (state, payload) {
+      state.searches = payload
+    },
+    logout (state) {
+      state.user = ''
     }
   },
   actions: {
@@ -39,6 +46,9 @@ export const store = new Vuex.Store({
     },
     user (state) {
       return state.user
+    },
+    searches (state) {
+      return state.searches
     }
   }
 })

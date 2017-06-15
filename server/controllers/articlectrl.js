@@ -9,7 +9,9 @@ var get = function (req, res) {
 }
 
 var getOne = function (req, res) {
-  Article.findById(req.params.id, (err, article) => {
+  Article.findById(req.params.id)
+  .populate('author')
+  .exec(function (err, article) {
     res.send(err ? err : article)
   })
 }
@@ -32,7 +34,6 @@ var update = function (req, res) {
     if (err) {
       res.send(err)
     } else {
-      console.log(req.body.creator)
       if (article.author == req.body.creator) {
         article.title = req.body.title || article.title
         article.articleContent = req.body.articleContent || article.articleContent
@@ -50,22 +51,36 @@ var update = function (req, res) {
 }
 
 var remove = function (req, res) {
-  Article.findById(req.params.id, (err, article) => {
+  Article.findOneAndRemove({ _id: req.params.id}, (err, article) => {
     if (err) {
       res.send(err)
     } else {
-      if (article.author == req.body.creator) {
-        Article.findOneAndRemove({_id: req.params.id}, (err, article) => {
-          if(err) res.send(err)
-          res.send(article)
-        })
-      } else {
-        res.send({ msg: 'Not authorized' })
-      }
+      res.send(article)
     }
   })
 }
 
+var findBySomething = function (req, res) {
+  let cat = req.params.some
+  if (cat == 'category' ) {
+    Article.find({ category: req.params.search}, (err, articles) => {
+      if (err) {
+        res.send(err)
+      } else {
+        res.send(articles)
+      }
+    })
+  } else {
+    Article.find({ author: req.params.search}, (err, articles) => {
+      if (err) {
+        res.send(err)
+      } else {
+        res.send(articles)
+      }
+    })
+  }
+}
+
 module.exports = {
-  get, getOne, create, update, remove
+  get, getOne, create, update, remove, findBySomething
 }

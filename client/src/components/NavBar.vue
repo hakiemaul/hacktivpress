@@ -23,7 +23,7 @@
             </template>
 
             <b-dropdown-item to="#">Profile</b-dropdown-item>
-            <b-dropdown-item to="#">Signout</b-dropdown-item>
+            <b-dropdown-item @click="doLogout">Signout</b-dropdown-item>
           </b-nav-item-dropdown>
 
         </b-nav>
@@ -37,6 +37,13 @@
 
 <script>
 export default {
+  methods: {
+    doLogout () {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      this.$store.commit('logout')
+    }
+  },
   computed: {
     user () {
       return this.$store.getters.user
