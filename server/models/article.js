@@ -6,12 +6,14 @@ var articleSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  content: {
+  articleContent: {
     type: String,
     required: true
   },
-  category: {[String]},
-  author: { type: Schema.Types.ObjectId, ref: 'User' }
+  category: [String],
+  author: { type: Schema.Types.ObjectId, ref: 'User' },
+  createdAt: Date,
+  updatedAt: Date
 })
 
 var Article = mongoose.model('Article', articleSchema)

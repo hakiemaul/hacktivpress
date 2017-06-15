@@ -49,6 +49,22 @@ var login = function (req, res) {
   })
 }
 
+var userInfo = function (req, res, next) {
+  let token = req.body.token
+  if(token) {
+    jwt.verify(token, sec, (err, decoded) => {
+      if(!err) {
+        req.body.creator = decoded._id;
+        next()
+      } else {
+        res.send(err)
+      }
+    })
+  } else {
+    res.send({msg: 'Not logged in'})
+  }
+}
+
 module.exports = {
-  signup, login
+  signup, login, userInfo
 }
