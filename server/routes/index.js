@@ -6,6 +6,7 @@ var articlectrl = require('../controllers/articlectrl')
 
 router.post('/signup', userctrl.signup)
 router.post('/login', userctrl.login)
+router.post('/userdata', userctrl.userData)
 
 router.get('/api/articles', articlectrl.get)
 router.get('/api/articles/:id', articlectrl.getOne)
