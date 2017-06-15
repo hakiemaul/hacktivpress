@@ -1,4 +1,5 @@
 var Article = require('../models/article')
+var User = require('../models/user')
 
 var get = function (req, res) {
   Article.find({})
@@ -71,12 +72,10 @@ var findBySomething = function (req, res) {
       }
     })
   } else {
-    Article.find({ author: req.params.search}, (err, articles) => {
-      if (err) {
-        res.send(err)
-      } else {
+    User.find({ username: req.params.search}, (err, user) => {
+      Article.find({ author: user._id }, (err, articles) => {
         res.send(articles)
-      }
+      })
     })
   }
 }
