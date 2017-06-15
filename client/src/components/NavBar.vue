@@ -4,7 +4,7 @@
 
       <b-nav-toggle target="nav_collapse"></b-nav-toggle>
 
-      <b-link class="navbar-brand" to="#">
+      <b-link class="navbar-brand" to="./">
         <span>Hacktivpress</span>
       </b-link>
 
