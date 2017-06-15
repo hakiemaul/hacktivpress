@@ -1,0 +1,27 @@
+{
+  "name": "hacktivpress",
+  "version": "1.0.0",
+  "description": "hacktivpress apps server using express",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hakiemaul/hacktivpress.git"
+  },
+  "author": "hakiemaul <noersedya@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hakiemaul/hacktivpress/issues"
+  },
+  "homepage": "https://github.com/hakiemaul/hacktivpress#readme",
+  "dependencies": {
+    "bcrypt": "^1.0.2",
+    "body-parser": "^1.17.2",
+    "cors": "^2.8.3",
+    "dotenv": "^4.0.0",
+    "express": "^4.15.3",
+    "jsonwebtoken": "^7.4.1"
+  }
+}
