@@ -1,7 +1,9 @@
 var Article = require('../models/article')
 
 var get = function (req, res) {
-  Article.find({}, (err, articles) => {
+  Article.find({})
+  .populate('author')
+  .exec(function (err, articles) {
     res.send(err ? err : articles)
   })
 }

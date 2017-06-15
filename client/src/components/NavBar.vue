@@ -10,6 +10,9 @@
 
       <b-collapse is-nav id="nav_collapse">
         <b-nav v-if="user._id" is-nav-bar class="ml-auto">
+          <b-button to="./create" size="" variant="info" href="">
+          Create New Article
+        </b-button>
           <b-nav-item>Welcome, {{ user.username }}</b-nav-item>
 
           <b-nav-item-dropdown right>
@@ -25,8 +28,7 @@
 
         </b-nav>
         <b-nav v-else is-nav-bar class="ml-auto">
-          <b-nav-item>Register/Login</b-nav-item>
-
+          <b-nav-item to="./registration">Register/Login</b-nav-item>
         </b-nav>
       </b-collapse>
     </b-navbar>

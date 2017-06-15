@@ -14,6 +14,7 @@ export default {
   },
   created () {
     this.$store.dispatch('getArticles')
+    this.$store.dispatch('getUser')
   }
 }
 </script>
