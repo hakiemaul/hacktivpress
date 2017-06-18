@@ -15,7 +15,7 @@
     <div class="row">
       <div class="col-10">
       </div>
-      <div class="col-2" v-if="user._id === article.author">
+      <div class="col-2" v-if="user._id === article.author._id">
         <i class="fa fa-trash buttonme" aria-hidden="true" @click="doRemove" style="color: red"></i>
         <i class="fa fa-pencil-square-o buttonme" aria-hidden="true" @click="editArticle"></i>
 
