@@ -30,7 +30,7 @@ jobs:
                 - 'server/**/*'
   client:
     needs: pre_job
-    if: needs.pre_job.outputs.should_skip != 'true' || !fromJSON(needs.pre_job.outputs.paths_result).client.should_skip
+    if: ${{ fromJSON(needs.pre_job.outputs.paths_result).client.should_skip != 'true' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -46,7 +46,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   server:
     needs: pre_job
-    if: needs.pre_job.outputs.should_skip != 'true' || !fromJSON(needs.pre_job.outputs.paths_result).server.should_skip
+    if: ${{ fromJSON(needs.pre_job.outputs.paths_result).server.should_skip != 'true' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
