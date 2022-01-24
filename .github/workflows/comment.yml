@@ -24,6 +24,7 @@ jobs:
             });
             return pr.data.head.sha
       - name: Get SonarCloud Result
+        uses: actions/github-script@v3
         id: sc_result
         with:
           script: |
