@@ -1,0 +1,15 @@
+name: Check SonarCloud Status
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  sonarcloud_report:
+    name: SonarCloud Report
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo A comment on sender $SENDER
+        env:
+          SENDER: ${{ github.event.issue.sender.login }}
