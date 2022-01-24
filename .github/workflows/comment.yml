@@ -7,13 +7,31 @@ on:
 jobs:
   sonarcloud_report:
     name: SonarCloud Report
-    if: ${{ github.event.sender.login == 'sonarcloud[bot]' }}
+    if: ${{ github.event.issue.pull_request && github.event.sender.login == 'sonarcloud[bot]' }}
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo A comment on sender $SENDER
-        env:
-          SENDER: ${{ github.event.comment.body }}
+      - name: Get PR SHA
+        id: sha
+        uses: actions/github-script@v4
+        with:
+          result-encoding: string
+          script: |
+            const { owner, repo, number } = context.issue;
+            const pr = await github.pulls.get({
+              owner,
+              repo,
+              pull_number: number,
+            });
+            return pr.data.head.sha
+      - name: Get SonarCloud Result
+        id: sc_result
+        with:
+          script: |
+            const body = context.payload.comment.body;
+            core.setOutput('is_success', body.includes('Quality Gate passed'));
+
+            const nameRegex = /^\[\*\*(.*)\*\*\]/gim;
+            core.setOutput('project_name', body.split(nameRegex)[1]);
       - name: Trigger Action
         uses: octokit/request-action@v2.x
         id: create_check_run
@@ -21,8 +39,8 @@ jobs:
           route: POST /repos/{owner}/{repo}/check-runs
           owner: ${{ github.event.repository.owner.login }}
           repo: ${{ github.event.repository.name }}
-          name: "SonarCloud Report"
-          head_sha: ${{ github.sha }}
+          name: "[${{ steps.sc_result.outputs.project_name }}] SonarCloud Report"
+          head_sha: ${{ steps.sha.outputs.result }}
           output: | # The | is significant!
             title: SonarCloud Report
             summary: A summary of the test check run
@@ -33,6 +51,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # Update check run to completed, successful status
       - name: Update Successful Action
+        if: ${{ steps.sc_result.outputs.is_success }}
         uses: octokit/request-action@v2.x
         id: update_check_run_success
         with:
@@ -45,6 +64,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Update Failed Action
+        if: ${{ !steps.sc_result.outputs.is_success }}
         uses: octokit/request-action@v2.x
         id: update_check_run_failed
         with:
