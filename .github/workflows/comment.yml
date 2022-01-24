@@ -22,23 +22,18 @@ jobs:
               pull_number: number,
             });
             return pr.data.head;
-      - name: Get SonarCloud Result
+      - name: Get Variables
+        id: loc_var
         uses: actions/github-script@v4
-        id: sc_result
-        with:
-          script: |
-            const body = context.payload.comment.body;
-            return body.includes('Quality Gate passed');
-          result-encoding: string
-      - name: Get SonarCloud Project Name
-        uses: actions/github-script@v4
-        id: sc_project_name
         with:
           script: |
             const body = context.payload.comment.body;
             const nameRegex = /^\[\*\*(.*)\*\*\]/gim;
-            return body.split(nameRegex)[1];
-          result-encoding: string
+
+            return {
+              "is_passed": body.includes('Quality Gate passed').toString(),
+              "project_name": body.split(nameRegex)[1],
+            };
       - name: Trigger Action
         uses: octokit/request-action@v2.x
         id: create_check_run
@@ -46,8 +41,8 @@ jobs:
           route: POST /repos/{owner}/{repo}/check-runs
           owner: ${{ github.event.repository.owner.login }}
           repo: ${{ github.event.repository.name }}
-          name: ${{ steps.sc_project_name.outputs.result }}
-          head_sha: ${{ fromJson(steps.create_check_run.outputs.data).sha }}
+          name: ${{ fromJson(steps.loc_var.outputs.data).project_name }}
+          head_sha: ${{ fromJson(steps.pr.outputs.data).sha }}
           output: | # The | is significant!
             title: SonarCloud Report
             summary: A summary of the test check run
@@ -56,9 +51,8 @@ jobs:
                 image_url: https://octodex.github.com/images/jetpacktocat.png
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # Update check run to completed, successful status
       - name: Update Successful Action
-        if: ${{ steps.sc_result.outputs.result == 'true' }}
+        if: ${{ fromJson(steps.loc_var.outputs.data).is_passed == 'true' }}
         uses: octokit/request-action@v2.x
         id: update_check_run_success
         with:
@@ -71,7 +65,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Update Failed Action
-        if: ${{ steps.sc_result.outputs.result != 'true' }}
+        if: ${{ fromJson(steps.loc_var.outputs.data).is_passed != 'true' }}
         uses: octokit/request-action@v2.x
         id: update_check_run_failed
         with:
