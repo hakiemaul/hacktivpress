@@ -10,11 +10,10 @@ jobs:
     if: ${{ github.event.issue.pull_request && github.event.sender.login == 'sonarcloud[bot]' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Get PR SHA
-        id: sha
+      - name: Get PR
+        id: pr
         uses: actions/github-script@v4
         with:
-          result-encoding: string
           script: |
             const { owner, repo, number } = context.issue;
             const pr = await github.pulls.get({
@@ -22,9 +21,9 @@ jobs:
               repo,
               pull_number: number,
             });
-            return pr.data.head.sha
+            return pr.data.head;
       - name: Get SonarCloud Result
-        uses: actions/github-script@v3
+        uses: actions/github-script@v4
         id: sc_result
         with:
           script: |
@@ -32,7 +31,7 @@ jobs:
             return body.includes('Quality Gate passed');
           result-encoding: string
       - name: Get SonarCloud Project Name
-        uses: actions/github-script@v3
+        uses: actions/github-script@v4
         id: sc_project_name
         with:
           script: |
@@ -48,7 +47,7 @@ jobs:
           owner: ${{ github.event.repository.owner.login }}
           repo: ${{ github.event.repository.name }}
           name: ${{ steps.sc_project_name.outputs.result }}
-          head_sha: ${{ steps.sha.outputs.result }}
+          head_sha: ${{ fromJson(steps.create_check_run.outputs.data).sha }}
           output: | # The | is significant!
             title: SonarCloud Report
             summary: A summary of the test check run
