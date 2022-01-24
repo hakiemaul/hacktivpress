@@ -41,7 +41,7 @@ jobs:
           route: POST /repos/{owner}/{repo}/check-runs
           owner: ${{ github.event.repository.owner.login }}
           repo: ${{ github.event.repository.name }}
-          name: ${{ fromJson(steps.loc_var.outputs.data).project_name }}
+          name: SonarCloud Result
           head_sha: ${{ fromJson(steps.pr.outputs.data).sha }}
           output: | # The | is significant!
             title: SonarCloud Report
