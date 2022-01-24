@@ -42,7 +42,7 @@ jobs:
           owner: ${{ github.event.repository.owner.login }}
           repo: ${{ github.event.repository.name }}
           name: SonarCloud Result
-          head_sha: ${{ fromJson(steps.pr.outputs.data).sha }}
+          head_sha: ${{ fromJson(steps.pr.outputs).sha }}
           output: | # The | is significant!
             title: SonarCloud Report
             summary: A summary of the test check run
