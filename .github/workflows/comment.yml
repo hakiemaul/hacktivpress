@@ -51,8 +51,13 @@ jobs:
                 image_url: https://octodex.github.com/images/jetpacktocat.png
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Test
+        shell: bash
+        run: |
+          echo Check ID: ${{ fromJson(steps.create_check_run.outputs.data).id }}
       - name: Update Successful Action
-        if: ${{ fromJson(steps.loc_var.outputs.data).is_passed == 'true' }}
+        if: ${{ fromJson(steps.loc_var.outputs).is_passed == 'true' }}
         uses: octokit/request-action@v2.x
         id: update_check_run_success
         with:
@@ -65,7 +70,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Update Failed Action
-        if: ${{ fromJson(steps.loc_var.outputs.data).is_passed != 'true' }}
+        if: ${{ fromJson(steps.loc_var.outputs).is_passed != 'true' }}
         uses: octokit/request-action@v2.x
         id: update_check_run_failed
         with:
