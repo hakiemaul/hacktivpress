@@ -42,7 +42,7 @@ jobs:
           owner: ${{ github.event.repository.owner.login }}
           repo: ${{ github.event.repository.name }}
           name: SonarCloud Result
-          head_sha: ${{ fromJson(steps.get_pr.outputs).sha }}
+          head_sha: ${{ fromJson(steps.get_pr.outputs.result).sha }}
           output: | # The | is significant!
             title: SonarCloud Report
             summary: A summary of the test check run
@@ -57,7 +57,7 @@ jobs:
         run: |
           echo Check ID: ${{ fromJson(steps.create_check_run.outputs.data).id }}
       - name: Update Successful Action
-        if: ${{ fromJson(steps.loc_var.outputs).is_passed == 'true' }}
+        if: ${{ fromJson(steps.loc_var.outputs.result).is_passed == 'true' }}
         uses: octokit/request-action@v2.x
         id: update_check_run_success
         with:
@@ -70,7 +70,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Update Failed Action
-        if: ${{ fromJson(steps.loc_var.outputs).is_passed != 'true' }}
+        if: ${{ fromJson(steps.loc_var.outputs.result).is_passed != 'true' }}
         uses: octokit/request-action@v2.x
         id: update_check_run_failed
         with:
