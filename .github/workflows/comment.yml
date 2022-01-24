@@ -7,9 +7,10 @@ on:
 jobs:
   sonarcloud_report:
     name: SonarCloud Report
+    if: ${{ github.event.sender.login == 'sonarcloud[bot]' }}
     runs-on: ubuntu-latest
     steps:
       - run: |
           echo A comment on sender $SENDER
         env:
-          SENDER: ${{ github.event.sender.login }}
+          SENDER: ${{ github.event.comment.body }}
