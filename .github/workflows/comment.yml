@@ -29,10 +29,17 @@ jobs:
         with:
           script: |
             const body = context.payload.comment.body;
-            core.setOutput('is_success', body.includes('Quality Gate passed'));
-
+            return body.includes('Quality Gate passed');
+          result-encoding: string
+      - name: Get SonarCloud Project Name
+        uses: actions/github-script@v3
+        id: sc_project_name
+        with:
+          script: |
+            const body = context.payload.comment.body;
             const nameRegex = /^\[\*\*(.*)\*\*\]/gim;
-            core.setOutput('project_name', body.split(nameRegex)[1]);
+            return body.split(nameRegex)[1];
+          result-encoding: string
       - name: Trigger Action
         uses: octokit/request-action@v2.x
         id: create_check_run
@@ -40,7 +47,7 @@ jobs:
           route: POST /repos/{owner}/{repo}/check-runs
           owner: ${{ github.event.repository.owner.login }}
           repo: ${{ github.event.repository.name }}
-          name: ${{ steps.sc_result.outputs.project_name }} - SonarCloud Report
+          name: ${{ steps.sc_project_name.outputs.result }}
           head_sha: ${{ steps.sha.outputs.result }}
           output: | # The | is significant!
             title: SonarCloud Report
@@ -52,7 +59,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # Update check run to completed, successful status
       - name: Update Successful Action
-        if: ${{ steps.sc_result.outputs.is_success }}
+        if: ${{ steps.sc_result.outputs.result == 'true' }}
         uses: octokit/request-action@v2.x
         id: update_check_run_success
         with:
@@ -65,7 +72,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Update Failed Action
-        if: ${{ !steps.sc_result.outputs.is_success }}
+        if: ${{ steps.sc_result.outputs.result != 'true' }}
         uses: octokit/request-action@v2.x
         id: update_check_run_failed
         with:
