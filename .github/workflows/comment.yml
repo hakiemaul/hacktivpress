@@ -40,7 +40,7 @@ jobs:
           route: POST /repos/{owner}/{repo}/check-runs
           owner: ${{ github.event.repository.owner.login }}
           repo: ${{ github.event.repository.name }}
-          name: "[${{ steps.sc_result.outputs.project_name }}] SonarCloud Report"
+          name: ${{ steps.sc_result.outputs.project_name }} - SonarCloud Report
           head_sha: ${{ steps.sha.outputs.result }}
           output: | # The | is significant!
             title: SonarCloud Report
