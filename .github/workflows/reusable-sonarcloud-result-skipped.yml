@@ -54,7 +54,7 @@ jobs:
           echo Owner: ${{ inputs.owner }}
           echo Repo: ${{ inputs.repo }}
           echo Ref: ${{ inputs.sha }}
-          echo Get Checks: ${{ fromJson(steps.get_checks.outputs) }}
+          echo Get Checks: ${{ fromJson(steps.get_checks.outputs).check_runs[0].id }}
 
       - name: Trigger SonarCloud Result
         # only create new action IF no existing check for current SHA exists
