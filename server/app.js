@@ -7,6 +7,8 @@ var index = require('./routes/index')
 
 mongoose.connect('mongodb://localhost/api-crud-mongoose')
 
+console.log('add useless log')
+
 app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }))
