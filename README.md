@@ -1,6 +1,6 @@
 # Hacktivpress
 
-This is an application that will serve the needs for publishing quality content by quality user. Using this web application, user can post, edit and delete their writing. The application is using an express based server
+This is an application that will serve the needs for publishing quality content by quality user. Using this web application, user can post, edit and delete their writing. The application is using an express based server. Change README
 
 ## Getting Started
 
