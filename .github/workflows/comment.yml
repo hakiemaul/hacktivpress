@@ -51,7 +51,7 @@ jobs:
           echo Check ID: ${{ fromJson(steps.get_checks.outputs.data).check_runs[0].id }}
           echo SHA: ${{ fromJson(steps.get_pr.outputs.result).sha }}
       - name: Trigger Action
-        if: ${{ fromJson(steps.get_checks.outputs.data).check_runs[0].id != '' }}
+        if: ${{ !fromJson(steps.get_checks.outputs.data).check_runs[0].id }}
         uses: octokit/request-action@v2.x
         id: create_check_run
         with:
@@ -76,7 +76,7 @@ jobs:
           route: PATCH /repos/{owner}/{repo}/check-runs/{check_run_id}
           owner: ${{ github.event.repository.owner.login }}
           repo: ${{ github.event.repository.name }}
-          check_run_id: ${{ fromJson(steps.create_check_run.outputs.data).id || fromJson(steps.get_checks.outputs.data).check_runs[0].id }}
+          check_run_id: ${{ !fromJson(steps.get_checks.outputs.data).check_runs[0].id && fromJson(steps.create_check_run.outputs.data).id || fromJson(steps.get_checks.outputs.data).check_runs[0].id }}
           conclusion: "success"
           status: "completed"
         env:
@@ -89,7 +89,7 @@ jobs:
           route: PATCH /repos/{owner}/{repo}/check-runs/{check_run_id}
           owner: ${{ github.event.repository.owner.login }}
           repo: ${{ github.event.repository.name }}
-          check_run_id: ${{ fromJson(steps.create_check_run.outputs.data).id || fromJson(steps.get_checks.outputs.data).check_runs[0].id }}
+          check_run_id: ${{ !fromJson(steps.get_checks.outputs.data).check_runs[0].id && fromJson(steps.create_check_run.outputs.data).id || fromJson(steps.get_checks.outputs.data).check_runs[0].id }}
           conclusion: "failure"
           status: "completed"
         env:
