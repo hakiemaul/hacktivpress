@@ -48,7 +48,6 @@ export const store = new Vuex.Store({
       return state.user
     },
     searches (state) {
-      console.log('something gitu')
       return state.searches
     }
   }

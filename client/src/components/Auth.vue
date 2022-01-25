@@ -69,9 +69,8 @@ export default {
       .then(function (response) {
         if (response.data._id) {
           self.regStat = true
-        }
-        else {
-          self.regStat = true
+        } else {
+          self.failedLog = true
         }
       })
       .catch(function (err) {
