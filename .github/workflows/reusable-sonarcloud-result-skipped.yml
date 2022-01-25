@@ -36,6 +36,7 @@ jobs:
           filters: ${{ inputs.filters }}
 
       - name: Get SonarCloud Result Checks
+        if: ${{ steps.filter.outputs.changed != 'true' }}
         id: get_checks
         uses: octokit/request-action@v2.x
         with:

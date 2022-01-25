@@ -10,36 +10,22 @@ on:
 
 name: CI
 jobs:
-  pre_job:
-    runs-on: ubuntu-latest
-    outputs:
-      should_skip: ${{ steps.skip_check.outputs.should_skip }}
-      paths_result: ${{ steps.skip_check.outputs.paths_result }}
-    steps:
-      - id: skip_check
-        uses: fkirc/skip-duplicate-actions@master
-        with:
-          paths_filter: |
-            client:
-              paths_ignore:
-                - 'client/docs/**/*'
-              paths:
-                - 'client/**/*'
-              backtracking: 10
-            server:
-              paths:
-                - 'server/**/*'
-              backtracking: 10
   client:
-    needs: pre_job
-    if: ${{ !fromJSON(needs.pre_job.outputs.paths_result).client.should_skip }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
       with:
         # Disabling shallow clone is recommended for improving relevancy of reporting
         fetch-depth: 0
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        initial-fetch-depth: 10
+        filters: |
+          changed:
+            - client/**
     - name: SonarCloud Scan
+      if: ${{ steps.filter.outputs.changed == 'true' }}
       uses: sonarsource/sonarcloud-github-action@master
       with:
         projectBaseDir: client
@@ -47,15 +33,21 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   server:
-    needs: pre_job
-    if: ${{ !fromJSON(needs.pre_job.outputs.paths_result).server.should_skip }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
       with:
         # Disabling shallow clone is recommended for improving relevancy of reporting
         fetch-depth: 0
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        initial-fetch-depth: 10
+        filters: |
+          changed:
+            - server/**
     - name: SonarCloud Scan
+      if: ${{ steps.filter.outputs.changed == 'true' }}
       uses: sonarsource/sonarcloud-github-action@master
       with:
         projectBaseDir: server
