@@ -70,7 +70,7 @@ export default {
         if (response.data._id) {
           self.regStat = true
         } else {
-          self.failedLog = true
+          self.failedReg = true
         }
       })
       .catch(function (err) {
