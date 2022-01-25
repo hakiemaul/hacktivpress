@@ -35,13 +35,6 @@ jobs:
           initial-fetch-depth: 10
           filters: ${{ inputs.filters }}
 
-      - name: Test
-        shell: bash
-        run: |
-          echo Owner: ${{ inputs.owner }}
-          echo Repo: ${{ inputs.repo }}
-          echo Ref: ${{ inputs.sha }}
-
       - name: Get SonarCloud Result Checks
         if: ${{ steps.filter.outputs.changed != 'true' }}
         id: get_checks
@@ -54,6 +47,14 @@ jobs:
           check_name: SonarCloud Result
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Test
+        shell: bash
+        run: |
+          echo Owner: ${{ inputs.owner }}
+          echo Repo: ${{ inputs.repo }}
+          echo Ref: ${{ inputs.sha }}
+          echo Get Checks: ${{ steps.get_checks.outputs }}
 
       - name: Trigger SonarCloud Result
         # only create new action IF no existing check for current SHA exists
