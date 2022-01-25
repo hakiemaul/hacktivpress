@@ -12,6 +12,16 @@ on:
         required: false
         default: ${{ github.event.pull_request.head.sha || github.sha }}
         type: string
+      owner:
+        description: Repo owner
+        required: false
+        default: ${{ github.event.repository.owner.login }}
+        type: string
+      repo:
+        description: Repo owner
+        required: false
+        default: ${{ github.event.repository.name }}
+        type: string
 
 jobs:
   sonarcloud-result:
@@ -31,8 +41,8 @@ jobs:
         uses: octokit/request-action@v2.x
         with:
           route: GET /repos/{owner}/{repo}/commits/{ref}/check-runs
-          owner: ${{ github.event.repository.owner.login }}
-          repo: ${{ github.event.repository.name }}
+          owner: ${{ inputs.owner }}
+          repo: ${{ inputs.repo }}
           ref: ${{ inputs.sha }}
           check_name: SonarCloud Result
         env:
@@ -45,8 +55,8 @@ jobs:
         id: create_check_run
         with:
           route: POST /repos/{owner}/{repo}/check-runs
-          owner: ${{ github.event.repository.owner.login }}
-          repo: ${{ github.event.repository.name }}
+          owner: ${{ inputs.owner }}
+          repo: ${{ inputs.repo }}
           name: SonarCloud Result
           head_sha: ${{ inputs.sha }}
           conclusion: "success"
