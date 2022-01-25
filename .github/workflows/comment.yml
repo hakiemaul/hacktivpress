@@ -1,0 +1,95 @@
+name: Check SonarCloud Status
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  sonarcloud_report:
+    name: SonarCloud Report
+    if: ${{ github.event.issue.pull_request && github.event.sender.login == 'sonarcloud[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get PR
+        id: get_pr
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const { owner, repo, number } = context.issue;
+            const pr = await github.pulls.get({
+              owner,
+              repo,
+              pull_number: number,
+            });
+            return pr.data.head;
+      - name: Get Variables
+        id: loc_var
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const body = context.payload.comment.body;
+            const nameRegex = /^\[\*\*(.*)\*\*\]/gim;
+
+            return {
+              "is_passed": body.includes('Quality Gate passed').toString(),
+              "project_name": body.split(nameRegex)[1],
+            };
+      - name: Get Checks
+        id: get_checks
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/{owner}/{repo}/commits/{ref}/check-runs
+          owner: ${{ github.event.repository.owner.login }}
+          repo: ${{ github.event.repository.name }}
+          ref: ${{ fromJson(steps.get_pr.outputs.result).sha }}
+          check_name: SonarCloud Result
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Test
+        shell: bash
+        run: |
+          echo Check ID: ${{ fromJson(steps.get_checks.outputs.data)[0].id }}
+          echo SHA: ${{ fromJson(steps.get_pr.outputs.result).sha }}
+      - name: Trigger Action
+        uses: octokit/request-action@v2.x
+        id: create_check_run
+        with:
+          route: POST /repos/{owner}/{repo}/check-runs
+          owner: ${{ github.event.repository.owner.login }}
+          repo: ${{ github.event.repository.name }}
+          name: SonarCloud Result
+          head_sha: ${{ fromJson(steps.get_pr.outputs.result).sha }}
+          output: | # The | is significant!
+            title: SonarCloud Report
+            summary: A summary of the test check run
+            images:
+              - alt: Test image
+                image_url: https://octodex.github.com/images/jetpacktocat.png
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Update Successful Action
+        if: ${{ fromJson(steps.loc_var.outputs.result).is_passed == 'true' }}
+        uses: octokit/request-action@v2.x
+        id: update_check_run_success
+        with:
+          route: PATCH /repos/{owner}/{repo}/check-runs/{check_run_id}
+          owner: ${{ github.event.repository.owner.login }}
+          repo: ${{ github.event.repository.name }}
+          check_run_id: ${{ fromJson(steps.create_check_run.outputs.data).id }}
+          conclusion: "success"
+          status: "completed"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Update Failed Action
+        if: ${{ fromJson(steps.loc_var.outputs.result).is_passed != 'true' }}
+        uses: octokit/request-action@v2.x
+        id: update_check_run_failed
+        with:
+          route: PATCH /repos/{owner}/{repo}/check-runs/{check_run_id}
+          owner: ${{ github.event.repository.owner.login }}
+          repo: ${{ github.event.repository.name }}
+          check_run_id: ${{ fromJson(steps.create_check_run.outputs.data).id }}
+          conclusion: "failure"
+          status: "completed"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
