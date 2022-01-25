@@ -49,6 +49,7 @@ jobs:
         shell: bash
         run: |
           echo Check ID: ${{ fromJson(steps.get_checks.outputs.data)[0].id }}
+          echo SHA: ${{ fromJson(steps.get_pr.outputs.result).sha }}
       - name: Trigger Action
         uses: octokit/request-action@v2.x
         id: create_check_run
