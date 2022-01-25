@@ -75,7 +75,7 @@ export default {
       })
       .catch(function (err) {
         console.log(err)
-        self.failedReg = true
+        self.failedReg = false
       })
     },
     doLogin () {
