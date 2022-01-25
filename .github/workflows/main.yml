@@ -25,9 +25,11 @@ jobs:
                 - 'client/docs/**/*'
               paths:
                 - 'client/**/*'
+              backtracking: 10
             server:
               paths:
                 - 'server/**/*'
+              backtracking: 10
   client:
     needs: pre_job
     if: needs.pre_job.outputs.should_skip != 'true' || !fromJSON(needs.pre_job.outputs.paths_result).client.should_skip
