@@ -7,7 +7,7 @@ on:
 jobs:
   sonarcloud_report:
     name: SonarCloud Report
-    if: ${{ github.event.issue.pull_request && github.event.sender.login == 'sonarcloud[bot]' }}
+    if: ${{ github.event.issue.pull_request }}
     runs-on: ubuntu-latest
     steps:
       - name: Get PR
