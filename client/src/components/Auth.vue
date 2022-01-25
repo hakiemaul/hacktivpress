@@ -71,7 +71,7 @@ export default {
           self.regStat = true
         }
         else {
-          self.failedReg = true
+          self.regStat = true
         }
       })
       .catch(function (err) {
