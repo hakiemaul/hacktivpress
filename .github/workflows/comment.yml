@@ -7,7 +7,8 @@ on:
 jobs:
   sonarcloud_report:
     name: SonarCloud Report
-    if: ${{ github.event.issue.pull_request && github.event.sender.login == 'sonarcloud[bot]' }}
+    # only run on PR AND if commenter is sonarcloud bot
+    if: ${{ github.event.issue.pull_request }}
     runs-on: ubuntu-latest
     steps:
       - name: Get PR
@@ -48,9 +49,11 @@ jobs:
       - name: Test
         shell: bash
         run: |
-          echo Check ID: ${{ fromJson(steps.get_checks.outputs.data)[0].id }}
+          echo Check ID: ${{ fromJson(steps.get_checks.outputs.data).check_runs[0].id }}
           echo SHA: ${{ fromJson(steps.get_pr.outputs.result).sha }}
       - name: Trigger Action
+        # only create new action IF no existing check for current SHA exists
+        if: ${{ !fromJson(steps.get_checks.outputs.data).check_runs[0].id }}
         uses: octokit/request-action@v2.x
         id: create_check_run
         with:
@@ -59,23 +62,20 @@ jobs:
           repo: ${{ github.event.repository.name }}
           name: SonarCloud Result
           head_sha: ${{ fromJson(steps.get_pr.outputs.result).sha }}
-          output: | # The | is significant!
-            title: SonarCloud Report
-            summary: A summary of the test check run
-            images:
-              - alt: Test image
-                image_url: https://octodex.github.com/images/jetpacktocat.png
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Update Successful Action
-        if: ${{ fromJson(steps.loc_var.outputs.result).is_passed == 'true' }}
+        # IF sonarcloud analysis passed AND no existing check exists
+        # Reasoning:
+        # - If existing check exists, if it passed we don't need to update, if it failed we shouldn't update 
+        if: ${{ fromJson(steps.loc_var.outputs.result).is_passed == 'true' && !fromJson(steps.get_checks.outputs.data).check_runs[0].id }}
         uses: octokit/request-action@v2.x
         id: update_check_run_success
         with:
           route: PATCH /repos/{owner}/{repo}/check-runs/{check_run_id}
           owner: ${{ github.event.repository.owner.login }}
           repo: ${{ github.event.repository.name }}
-          check_run_id: ${{ fromJson(steps.create_check_run.outputs.data).id }}
+          check_run_id: ${{ !fromJson(steps.get_checks.outputs.data).check_runs[0].id && fromJson(steps.create_check_run.outputs.data).id || fromJson(steps.get_checks.outputs.data).check_runs[0].id }}
           conclusion: "success"
           status: "completed"
         env:
@@ -88,7 +88,7 @@ jobs:
           route: PATCH /repos/{owner}/{repo}/check-runs/{check_run_id}
           owner: ${{ github.event.repository.owner.login }}
           repo: ${{ github.event.repository.name }}
-          check_run_id: ${{ fromJson(steps.create_check_run.outputs.data).id }}
+          check_run_id: ${{ !fromJson(steps.get_checks.outputs.data).check_runs[0].id && fromJson(steps.create_check_run.outputs.data).id || fromJson(steps.get_checks.outputs.data).check_runs[0].id }}
           conclusion: "failure"
           status: "completed"
         env:
