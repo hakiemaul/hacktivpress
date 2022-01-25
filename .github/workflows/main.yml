@@ -62,3 +62,19 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  skipped-sonarcloud-result-client:
+    name: SonarCloud Result Client
+    uses: hakiemaul/hacktivpress/.github/workflows/reusable-sonarcloud-result-skipped.yml@master
+    with:
+      filters: |
+        changed:
+          - client/**
+
+  skipped-sonarcloud-result-server:
+    name: SonarCloud Result Server
+    uses: hakiemaul/hacktivpress/.github/workflows/reusable-sonarcloud-result-skipped.yml@master
+    with:
+      filters: |
+        changed:
+          - server/**
