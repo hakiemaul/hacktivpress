@@ -40,7 +40,7 @@ jobs:
 
       - name: Trigger SonarCloud Result
         # only create new action IF no existing check for current SHA exists
-        if: ${{ steps.filter.outputs.changed != 'true' }}
+        if: ${{ !fromJson(steps.get_checks.outputs.data).check_runs[0].id && steps.filter.outputs.changed != 'true' }}
         uses: octokit/request-action@v2.x
         id: create_check_run
         with:
@@ -49,7 +49,7 @@ jobs:
           repo: ${{ github.event.repository.name }}
           name: SonarCloud Result
           head_sha: ${{ inputs.sha }}
-          conclusion: success
-          status: completed
+          conclusion: "success"
+          status: "completed"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
