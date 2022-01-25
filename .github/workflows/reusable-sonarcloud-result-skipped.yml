@@ -1,0 +1,55 @@
+name: Reusable SonarCloud Result - Skipped
+
+on:
+  workflow_call:
+    inputs:
+      filters:
+        description: The paths to decide if the workflow steps should run.
+        required: true
+        type: string
+      sha:
+        description: SHA to refer the checks. Defaults to current pull request SHA or current SHA.
+        required: false
+        default: ${{ github.event.pull_request.head.sha || github.sha }}
+        type: string
+
+jobs:
+  sonarcloud-result:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          initial-fetch-depth: 10
+          filters: ${{ inputs.filters }}
+
+      - name: Get SonarCloud Result Checks
+        if: ${{ steps.filter.outputs.changed != 'true' }}
+        id: get_checks
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/{owner}/{repo}/commits/{ref}/check-runs
+          owner: ${{ github.event.repository.owner.login }}
+          repo: ${{ github.event.repository.name }}
+          ref: ${{ inputs.sha }}
+          check_name: SonarCloud Result
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Trigger SonarCloud Result
+        # only create new action IF no existing check for current SHA exists
+        if: ${{ !fromJson(steps.get_checks.outputs.data).check_runs[0].id && steps.filter.outputs.changed != 'true' }}
+        uses: octokit/request-action@v2.x
+        id: create_check_run
+        with:
+          route: POST /repos/{owner}/{repo}/check-runs
+          owner: ${{ github.event.repository.owner.login }}
+          repo: ${{ github.event.repository.name }}
+          name: SonarCloud Result
+          head_sha: ${{ inputs.sha }}
+          conclusion: success
+          status: completed
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
