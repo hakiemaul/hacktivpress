@@ -9,6 +9,8 @@ mongoose.connect('mongodb://localhost/api-crud-mongoose')
 
 console.log('add useless log')
 
+a = 'wow';
+
 app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }))
