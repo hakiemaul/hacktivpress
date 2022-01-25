@@ -39,7 +39,7 @@ var update = function (req, res) {
         article.title = req.body.title || article.title
         article.articleContent = req.body.articleContent || article.articleContent
         article.category = req.body.category || article.category
-        article.updatedAt = new Date()
+        article.updatedAt = req.body.category || new Date()
 
         article.save((err, article) => {
           res.send(err ? err : article)
