@@ -46,7 +46,7 @@ jobs:
             }
 
             return {
-              "is_passed": isPassed,
+              "is_passed": isPassed.toString(),
             };
       - name: Get Checks
         id: get_checks
