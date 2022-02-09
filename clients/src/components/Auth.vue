@@ -66,7 +66,7 @@ export default {
         email: self.regEmail,
         password: self.regPassword
       })
-      .then(function (response, a, b, c, d, e, f, g) {
+      .then(function (response) {
         if (response.data._id) {
           self.regStat = true
         } else {
