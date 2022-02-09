@@ -31,7 +31,7 @@ jobs:
         projectBaseDir: client
         args: >
           -Dsonar.branch.name=${GIT_BRANCH}
-          -Dsonar.projectName=client
+          -Dsonar.projectName=clients
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -56,7 +56,7 @@ jobs:
         projectBaseDir: server
         args: >
           -Dsonar.branch.name=${GIT_BRANCH}
-          -Dsonar.projectName=server
+          -Dsonar.projectName=servers
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
