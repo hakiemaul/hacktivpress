@@ -30,7 +30,7 @@ var create = function (req, res) {
   })
 }
 
-var update = function (req, res, a, b, c, d, e, f) {
+var update = function (req, res) {
   Article.findById(req.params.id, (err, article) => {
     if (err) {
       res.send(err)
