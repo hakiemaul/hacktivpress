@@ -35,7 +35,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  server:
+  servers:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -63,7 +63,7 @@ jobs:
 
   skipped-sonarcloud-result-client:
     name: SonarCloud Result Client
-    uses: hakiemaul/hacktivpress/.github/workflows/reusable-sonarcloud-result-skipped.yml@client
+    uses: hakiemaul/hacktivpress/.github/workflows/reusable-sonarcloud-result-skipped.yml@master
     with:
       filters: |
         changed:
@@ -71,7 +71,7 @@ jobs:
 
   skipped-sonarcloud-result-server:
     name: SonarCloud Result Server
-    uses: hakiemaul/hacktivpress/.github/workflows/reusable-sonarcloud-result-skipped.yml@client
+    uses: hakiemaul/hacktivpress/.github/workflows/reusable-sonarcloud-result-skipped.yml@master
     with:
       filters: |
         changed:
