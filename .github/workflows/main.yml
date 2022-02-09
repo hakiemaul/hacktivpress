@@ -29,6 +29,9 @@ jobs:
       uses: sonarsource/sonarcloud-github-action@master
       with:
         projectBaseDir: client
+        args: >
+          -Dsonar.branch.name=${GIT_BRANCH}
+          -Dsonar.projectName=client
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -51,6 +54,9 @@ jobs:
       uses: sonarsource/sonarcloud-github-action@master
       with:
         projectBaseDir: server
+        args: >
+          -Dsonar.branch.name=${GIT_BRANCH}
+          -Dsonar.projectName=server
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
