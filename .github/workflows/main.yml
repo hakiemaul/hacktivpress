@@ -10,7 +10,7 @@ on:
 
 name: CI
 jobs:
-  client:
+  clients:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -23,7 +23,7 @@ jobs:
         initial-fetch-depth: 10
         filters: |
           changed:
-            - client/**
+            - clients/**
     - name: SonarCloud Scan
       if: ${{ steps.filter.outputs.changed == 'true' }}
       uses: sonarsource/sonarcloud-github-action@master
@@ -48,12 +48,12 @@ jobs:
         initial-fetch-depth: 10
         filters: |
           changed:
-            - server/**
+            - servers/**
     - name: SonarCloud Scan
       if: ${{ steps.filter.outputs.changed == 'true' }}
       uses: sonarsource/sonarcloud-github-action@master
       with:
-        projectBaseDir: server
+        projectBaseDir: servers
         args: >
           -Dsonar.branch.name=${GIT_BRANCH}
           -Dsonar.projectName=servers
@@ -67,7 +67,7 @@ jobs:
     with:
       filters: |
         changed:
-          - client/**
+          - clients/**
 
   skipped-sonarcloud-result-server:
     name: SonarCloud Result Server
@@ -75,4 +75,4 @@ jobs:
     with:
       filters: |
         changed:
-          - server/**
+          - servers/**
