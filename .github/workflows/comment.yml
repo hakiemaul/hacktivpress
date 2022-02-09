@@ -8,7 +8,7 @@ jobs:
   sonarcloud_report:
     name: SonarCloud Report
     # only run on PR AND if commenter is sonarcloud bot
-    if: ${{ github.event.issue.pull_request }}
+    if: ${{ github.event.issue.pull_request && github.event.sender.login == 'sonarcloud[bot]' }}
     runs-on: ubuntu-latest
     steps:
       - name: Get PR
@@ -39,6 +39,8 @@ jobs:
             const nameRegex = /^\[\*\*(.*)\*\*\]/gim;
             const projectName = body.split(nameRegex)[1];
 
+            console.log(projectName);
+
             let isPassed = true;
 
             if (includedFolders.some(v => projectName.includes(v))) {
@@ -47,6 +49,7 @@ jobs:
 
             return {
               "is_passed": isPassed.toString(),
+              "project_name": projectName,
             };
       - name: Get Checks
         id: get_checks
