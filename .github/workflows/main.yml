@@ -28,7 +28,7 @@ jobs:
       if: ${{ steps.filter.outputs.changed == 'true' }}
       uses: sonarsource/sonarcloud-github-action@master
       with:
-        projectBaseDir: client
+        projectBaseDir: clients
         args: >
           -Dsonar.branch.name=${GIT_BRANCH}
           -Dsonar.projectName=clients
