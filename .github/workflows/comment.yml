@@ -31,34 +31,28 @@ jobs:
             /** add services here if you want it to be counted towards consolidated result, otherwise
             *   result will be ignored and will always be counted as passed
             */
-            const includedFolders = [
-              'svc-wallet'
-            ];
 
             const body = context.payload.comment.body;
             const nameRegex = /^\[\*\*(.*)\*\*\]/gim;
             const projectName = body.split(nameRegex)[1];
 
-            console.log(projectName);
-
-            let isPassed = true;
-
-            if (includedFolders.some(v => projectName.includes(v))) {
-              isPassed = body.includes('Quality Gate passed').toString();
-            }
+            const isPassed = body.includes('Quality Gate passed').toString();
 
             return {
               "is_passed": isPassed.toString(),
               "project_name": projectName,
             };
-      - name: Project opt in file
+      - name: Project opt-in file
+        id: project_optin
         shell: bash
         run: |
           FILE=${{ fromJson(steps.loc_var.outputs.result).project_name }}/opt-in-required-sonarcloud
           echo $FILE
-          # if test -f "$FILE"; then
-          #     echo "$FILE exists."
-          # fi
+          if [ -f "$FILE" ]; then
+            echo "::set-output name=opt_in::true"
+          else
+            echo "::set-output name=opt_in::false"
+          fi
       - name: Get Checks
         id: get_checks
         uses: octokit/request-action@v2.x
@@ -105,7 +99,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Update Failed Action
-        if: ${{ fromJson(steps.loc_var.outputs.result).is_passed != 'true' }}
+        if: ${{ fromJson(steps.loc_var.outputs.result).is_passed != 'true' && steps.project_optin.outputs.opt_in == 'true' }}
         uses: octokit/request-action@v2.x
         id: update_check_run_failed
         with:
