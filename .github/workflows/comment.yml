@@ -86,7 +86,7 @@ jobs:
         # IF sonarcloud analysis passed AND no existing check exists
         # Reasoning:
         # - If existing check exists, if it passed we don't need to update, if it failed we shouldn't update 
-        if: ${{ fromJson(steps.loc_var.outputs.result).is_passed == 'true' && !fromJson(steps.get_checks.outputs.data).check_runs[0].id }}
+        if: ${{ (fromJson(steps.loc_var.outputs.result).is_passed == 'true' || steps.project_optin.outputs.opt_in == 'false' ) && !fromJson(steps.get_checks.outputs.data).check_runs[0].id }}
         uses: octokit/request-action@v2.x
         id: update_check_run_success
         with:
