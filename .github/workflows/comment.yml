@@ -46,8 +46,7 @@ jobs:
         id: test
         shell: bash
         run: |
-          FILE=opt-in-required-sonarcloud
-          cd ${{ fromJson(steps.loc_var.outputs.result).project_name }}
+          FILE=${{ fromJson(steps.loc_var.outputs.result).project_name }}/opt-in-required-sonarcloud
           git status
           if [ -f "$FILE" ]; then
             echo "::set-output name=opt_in::true"
