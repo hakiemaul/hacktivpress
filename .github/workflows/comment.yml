@@ -43,7 +43,7 @@ jobs:
               "project_name": projectName,
             };
       - name: Project opt-in file
-        id: project_optin
+        id: test
         shell: bash
         run: |
           FILE=opt-in-required-sonarcloud
