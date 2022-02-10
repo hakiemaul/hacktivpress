@@ -57,7 +57,7 @@ jobs:
         id: project_optin
         uses: andstor/file-existence-action@v1
         with:
-          files: "./${{ fromJson(steps.loc_var.outputs.result).project_name }}/opt-in-required-sonarcloud"
+          files: "./${{ fromJson(steps.loc_var.outputs.result).project_name }}/package.json"
       - name: Get Checks
         id: get_checks
         uses: octokit/request-action@v2.x
