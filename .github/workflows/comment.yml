@@ -48,7 +48,7 @@ jobs:
         run: |
           FILE=${{ fromJson(steps.loc_var.outputs.result).project_name }}/opt-in-required-sonarcloud
           echo $FILE
-          if [ -f "$FILE" ]; then
+          if [ test -f "$FILE" ]; then
             echo "::set-output name=opt_in::true"
           else
             echo "::set-output name=opt_in::false"
