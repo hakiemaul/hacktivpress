@@ -11,6 +11,8 @@ jobs:
     if: ${{ github.event.issue.pull_request && github.event.sender.login == 'sonarcloud[bot]' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Clone git repo
+        uses: actions/checkout@v2
       - name: Get PR
         id: get_pr
         uses: actions/github-script@v4
