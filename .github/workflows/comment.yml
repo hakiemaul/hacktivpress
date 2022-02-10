@@ -52,7 +52,6 @@ jobs:
               "project_name": projectName,
             };
       - name: Project opt in file
-        if: ${{ steps.loc_var.outputs.changed == 'true' }}
         shell: bash
         run: |
           FILE=${{ fromJson(steps.loc_var.outputs.result).project_name }}/opt-in-required-sonarcloud
