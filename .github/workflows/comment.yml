@@ -42,17 +42,18 @@ jobs:
               "is_passed": isPassed.toString(),
               "project_name": projectName,
             };
-      # - name: Project opt-in file
-      #   id: project_optin
-      #   shell: bash
-      #   run: |
-      #     FILE=opt-in-required-sonarcloud
-      #     cd ${{ fromJson(steps.loc_var.outputs.result).project_name }}
-      #     if [ -f "$FILE" ]; then
-      #       echo "::set-output name=opt_in::true"
-      #     else
-      #       echo "::set-output name=opt_in::false"
-      #     fi
+      - name: Project opt-in file
+        id: project_optin
+        shell: bash
+        run: |
+          FILE=opt-in-required-sonarcloud
+          cd ${{ fromJson(steps.loc_var.outputs.result).project_name }}
+          git status
+          if [ -f "$FILE" ]; then
+            echo "::set-output name=opt_in::true"
+          else
+            echo "::set-output name=opt_in::false"
+          fi
       - name: "Check opt-in file existence"
         id: project_optin
         uses: andstor/file-existence-action@v1
